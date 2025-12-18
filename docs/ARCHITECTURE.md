@@ -70,3 +70,37 @@ graph TB
     style TMDB fill:#01b4e4,stroke:#333,stroke-width:2px,color:#fff
 
 ```
+
+## 2. ER Diagram (Діаграма сутність-зв'язок)
+
+```mermaid
+erDiagram
+    USER ||--o{ WATCHLIST_ITEM : "has"
+    
+    USER {
+        uuid id 
+        string email "Unique email"
+        string passwordHash "Hashed password"
+        string name "User full name"
+        datetime createdAt "Registration date"
+        datetime updatedAt "Last update date"
+    }
+    
+    WATCHLIST_ITEM {
+        uuid id 
+        uuid userId "Reference to User"
+        int tmdbId "TMDB external ID"
+        string mediaType "movie or tv"
+        string status "Viewing status"
+        datetime addedAt "Date added to watchlist"
+        datetime updatedAt "Last status update"
+    }
+    
+    USER ||--|| USER_PROFILE : "has"
+    
+    USER_PROFILE {
+        uuid userId "Reference to User"
+        string preferredLanguage "UI language"
+    }
+
+```
