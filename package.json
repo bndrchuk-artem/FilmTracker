@@ -1,0 +1,33 @@
+{
+  "name": "filmtracker",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Full-stack додаток для управління особистим списком фільмів і серіалів. Дозволяє шукати контент через TMDB API, додавати його у watchlist та відстежувати статус перегляду.",
+  "main": "index.js",
+  "packageManager": "npm@11.5.1",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bndrchuk-artem/FilmTracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/bndrchuk-artem/FilmTracker/issues"
+  },
+  "homepage": "https://github.com/bndrchuk-artem/FilmTracker#readme",
+  "devDependencies": {
+    "turbo": "^2.6.3"
+  }
+}
