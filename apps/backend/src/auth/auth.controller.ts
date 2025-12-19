@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -16,6 +9,8 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from '../common/dto/register.dto';
 import { LoginDto } from '../common/dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
+import { User } from '../common/entities/user.entity';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -47,7 +42,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Отримання поточного користувача' })
   @ApiResponse({ status: 200, description: 'Дані поточного користувача' })
   @ApiResponse({ status: 401, description: 'Не авторизований' })
-  getMe(@Request() req: Express.Request & { user: unknown }) {
-    return req.user;
+  getMe(@CurrentUser() user: User) {
+    const { passwordHash, ...sanitized } = user;
+    return sanitized;
   }
 }
