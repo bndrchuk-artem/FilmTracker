@@ -8,13 +8,15 @@ import {
   Typography,
   IconButton,
   Box,
-  Select,
-  MenuItem,
-  FormControl,
+  Button,
   Chip,
 } from '@mui/material';
-import { Delete, Star } from '@mui/icons-material';
-import { WatchlistItem as WatchlistItemType, Media, WatchlistStatus } from '@/types';
+import { Delete } from '@mui/icons-material';
+import {
+  WatchlistItem as WatchlistItemType,
+  Media,
+  WatchlistStatus,
+} from '@/types';
 
 interface WatchlistItemProps {
   item: WatchlistItemType;
@@ -23,11 +25,23 @@ interface WatchlistItemProps {
   onRemove: (itemId: string) => void;
 }
 
-const statusLabels: Record<WatchlistStatus, string> = {
-  [WatchlistStatus.PLAN_TO_WATCH]: 'Plan to Watch',
-  [WatchlistStatus.WATCHING]: 'Watching',
-  [WatchlistStatus.WATCHED]: 'Watched',
-  [WatchlistStatus.DROPPED]: 'Dropped',
+const statusConfig = {
+  [WatchlistStatus.PLAN_TO_WATCH]: {
+    label: 'Plan to Watch',
+    color: '#2196f3',
+  },
+  [WatchlistStatus.WATCHING]: {
+    label: 'Watching',
+    color: '#ff9800',
+  },
+  [WatchlistStatus.WATCHED]: {
+    label: 'Watched',
+    color: '#4caf50',
+  },
+  [WatchlistStatus.DROPPED]: {
+    label: 'Dropped',
+    color: '#f44336',
+  },
 };
 
 export const WatchlistItemComponent: React.FC<WatchlistItemProps> = ({
@@ -58,7 +72,7 @@ export const WatchlistItemComponent: React.FC<WatchlistItemProps> = ({
               alignItems: 'start',
             }}
           >
-            <Box>
+            <Box sx={{ flexGrow: 1 }}>
               <Typography component="div" variant="h6">
                 {title}
               </Typography>
@@ -70,7 +84,13 @@ export const WatchlistItemComponent: React.FC<WatchlistItemProps> = ({
                   variant="outlined"
                 />
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <Star sx={{ fontSize: 16, color: 'warning.main' }} />
+                  <Typography
+                    variant="body2"
+                    color="warning.main"
+                    sx={{ fontWeight: 'bold' }}
+                  >
+                    ★
+                  </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {media.vote_average.toFixed(1)}
                   </Typography>
@@ -89,20 +109,42 @@ export const WatchlistItemComponent: React.FC<WatchlistItemProps> = ({
             </IconButton>
           </Box>
 
-          <FormControl size="small" sx={{ mt: 2, minWidth: 200 }}>
-            <Select
-              value={item.status}
-              onChange={(e) =>
-                onStatusChange(item.id, e.target.value as WatchlistStatus)
-              }
-            >
-              {Object.entries(statusLabels).map(([value, label]) => (
-                <MenuItem key={value} value={value}>
-                  {label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 1,
+              mt: 2,
+              flexWrap: 'wrap',
+            }}
+          >
+            {Object.entries(statusConfig).map(([status, config]) => {
+              const isActive = item.status === status;
+              return (
+                <Button
+                  key={status}
+                  size="small"
+                  variant={isActive ? 'contained' : 'outlined'}
+                  onClick={() =>
+                    onStatusChange(item.id, status as WatchlistStatus)
+                  }
+                  sx={{
+                    backgroundColor: isActive ? config.color : 'transparent',
+                    borderColor: config.color,
+                    color: isActive ? 'white' : config.color,
+                    '&:hover': {
+                      backgroundColor: isActive
+                        ? config.color
+                        : 'rgba(0,0,0,0.1)',
+                      borderColor: config.color,
+                    },
+                    minWidth: 120,
+                  }}
+                >
+                  {config.label}
+                </Button>
+              );
+            })}
+          </Box>
         </CardContent>
       </Box>
     </Card>

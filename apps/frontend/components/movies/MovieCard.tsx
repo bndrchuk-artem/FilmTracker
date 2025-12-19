@@ -11,24 +11,30 @@ import {
   Chip,
   Box,
 } from '@mui/material';
-import { Add, Star } from '@mui/icons-material';
-import { Media } from '@/types';
+import { Add, Check, Edit } from '@mui/icons-material';
+import { Media, WatchlistStatus } from '@/types';
 
 interface MovieCardProps {
   media: Media;
   onAddToWatchlist?: () => void;
+  onChangeStatus?: () => void;
   loading?: boolean;
+  isInWatchlist?: boolean;
+  currentStatus?: WatchlistStatus;
 }
 
 export const MovieCard: React.FC<MovieCardProps> = ({
   media,
   onAddToWatchlist,
+  onChangeStatus,
   loading,
+  isInWatchlist,
+  currentStatus,
 }) => {
   const title = 'title' in media ? media.title : media.name;
-  const date = 'release_date' in media ? media.release_date : media.first_air_date;
+  const date =
+    'release_date' in media ? media.release_date : media.first_air_date;
   const year = date ? new Date(date).getFullYear() : 'N/A';
-  
   const posterUrl = media.poster_path
     ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
     : '/placeholder-poster.png';
@@ -66,7 +72,13 @@ export const MovieCard: React.FC<MovieCardProps> = ({
           <Chip label={year} size="small" />
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Star sx={{ fontSize: 18, color: 'warning.main' }} />
+          <Typography
+            variant="body2"
+            color="warning.main"
+            sx={{ fontWeight: 'bold' }}
+          >
+            ★
+          </Typography>
           <Typography variant="body2" color="text.secondary">
             {media.vote_average.toFixed(1)}
           </Typography>
@@ -86,17 +98,31 @@ export const MovieCard: React.FC<MovieCardProps> = ({
           {media.overview || 'No description available'}
         </Typography>
       </CardContent>
-      {onAddToWatchlist && (
+      {(onAddToWatchlist || onChangeStatus) && (
         <CardActions>
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<Add />}
-            onClick={onAddToWatchlist}
-            disabled={loading}
-          >
-            {loading ? 'Adding...' : 'Add to Watchlist'}
-          </Button>
+          {isInWatchlist ? (
+            <Button
+              fullWidth
+              variant="contained"
+              color="success"
+              startIcon={<Check />}
+              endIcon={<Edit />}
+              onClick={onChangeStatus}
+              disabled={loading}
+            >
+              {loading ? 'Loading...' : 'In Watchlist'}
+            </Button>
+          ) : (
+            <Button
+              fullWidth
+              variant="contained"
+              startIcon={<Add />}
+              onClick={onAddToWatchlist}
+              disabled={loading}
+            >
+              {loading ? 'Adding...' : 'Add to Watchlist'}
+            </Button>
+          )}
         </CardActions>
       )}
     </Card>
