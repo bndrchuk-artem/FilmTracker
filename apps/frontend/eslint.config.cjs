@@ -1,19 +1,25 @@
-const {
-    defineConfig,
-} = require("eslint/config");
-
 const js = require("@eslint/js");
+const globals = require("globals");
+const reactHooks = require("eslint-plugin-react-hooks");
+const tseslint = require("typescript-eslint");
 
-const {
-    FlatCompat,
-} = require("@eslint/eslintrc");
-
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
-
-module.exports = defineConfig([{
-    extends: compat.extends("@filmtracker/eslint-config/frontend"),
-}]);
+module.exports = [
+  {
+    ignores: ["dist/**", ".next/**", "node_modules/**", "out/**"],
+  },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    files: ["**/*.{ts,tsx}"],
+    plugins: {
+      "react-hooks": reactHooks,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+    },
+    languageOptions: {
+      ecmaVersion: 2021,
+      globals: globals.browser,
+    },
+  },
+];

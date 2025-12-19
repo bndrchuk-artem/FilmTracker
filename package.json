@@ -16,12 +16,6 @@
     "test": "turbo run test",
     "prepare": "husky"
   },
-  "lint-staged": {
-    "*.{js,ts,tsx,json}": [
-      "eslint --fix",
-      "prettier --write"
-    ]
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bndrchuk-artem/FilmTracker.git"
@@ -41,6 +35,8 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
