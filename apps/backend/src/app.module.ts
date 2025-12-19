@@ -7,9 +7,11 @@ import { UsersModule } from './users/users.module';
 import { WatchlistModule } from './watchlist/watchlist.module';
 import { MoviesModule } from './movies/movies.module';
 import { CommonModule } from './common/common.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
+    PrismaModule,
     AuthModule,
     UsersModule,
     WatchlistModule,
