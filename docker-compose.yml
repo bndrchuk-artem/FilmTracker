@@ -1,14 +1,41 @@
-version: "3.9"
-
 services:
-  backend:
-    build: ./apps/backend
+  postgres:
+    image: postgres:16-alpine
+    container_name: watchlist-postgres
+    restart: unless-stopped
     ports:
-      - "3001:3000"
-    env_file:
-      - ./apps/backend/.env
+      - '5433:5432'
+    environment:
+      POSTGRES_USER: watchlist_user
+      POSTGRES_PASSWORD: watchlist_password
+      POSTGRES_DB: watchlist_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - watchlist-network
 
-  frontend:
-    build: ./apps/frontend
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: watchlist-pgadmin
+    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@watchlist.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - watchlist-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  watchlist-network:
+    driver: bridge

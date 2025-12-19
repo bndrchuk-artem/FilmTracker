@@ -28,3 +28,7 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+
+# Docker volumes
+postgres_data/
+pgadmin_data/
