@@ -1,31 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Box, TextField, Button } from '@mui/material';
+import React from 'react';
+import { Box, TextField, InputAdornment, CircularProgress } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  value: string;
+  onChange: (value: string) => void;
   loading?: boolean;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, loading }) => {
-  const [query, setQuery] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (query.trim()) {
-      onSearch(query.trim());
-    }
-  };
-
+export const SearchBar: React.FC<SearchBarProps> = ({
+  value,
+  onChange,
+  loading,
+}) => {
   return (
     <Box
-      component="form"
-      onSubmit={handleSubmit}
       sx={{
-        display: 'flex',
-        gap: 2,
         maxWidth: 600,
         mx: 'auto',
       }}
@@ -33,19 +25,23 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, loading }) => {
       <TextField
         fullWidth
         placeholder="Search movies and TV shows..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         disabled={loading}
         sx={{ bgcolor: 'background.paper' }}
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <Search />
+            </InputAdornment>
+          ),
+          endAdornment: loading ? (
+            <InputAdornment position="end">
+              <CircularProgress size={20} />
+            </InputAdornment>
+          ) : null,
+        }}
       />
-      <Button
-        type="submit"
-        variant="contained"
-        disabled={loading || !query.trim()}
-        startIcon={<Search />}
-      >
-        Search
-      </Button>
     </Box>
   );
 };
