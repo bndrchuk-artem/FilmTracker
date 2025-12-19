@@ -10,6 +10,7 @@ import { StringValue } from 'ms';
 @Module({
   imports: [
     PassportModule,
+    ConfigModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
