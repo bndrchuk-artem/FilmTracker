@@ -39,10 +39,10 @@ export interface Movie {
   id: number;
   title: string;
   overview: string;
-  posterPath: string | null;
-  backdropPath: string | null;
-  releaseDate: string;
-  voteAverage: number;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  release_date: string;
+  vote_average: number;
   genres: string[];
 }
 
@@ -50,10 +50,10 @@ export interface TVShow {
   id: number;
   name: string;
   overview: string;
-  posterPath: string | null;
-  backdropPath: string | null;
-  firstAirDate: string;
-  voteAverage: number;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  first_air_date: string;
+  vote_average: number;
   genres: string[];
 }
 
