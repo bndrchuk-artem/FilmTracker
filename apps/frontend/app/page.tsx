@@ -104,12 +104,12 @@ export default function Home() {
             <CircularProgress />
           </Box>
         ) : (
-          <Grid container spacing={3}>
+          <Grid container spacing={0}>
             {displayMedia.map((media) => (
               <Grid key={media.id}
                 sx={{ 
                   width: { xs: '100%', sm: '50%', md: '33.33%', lg: '25%' },
-                  padding: 1.5 
+                  padding: 1
                 }}>
                 <MovieCard
                   media={media}
