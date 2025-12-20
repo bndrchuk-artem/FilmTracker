@@ -9,13 +9,3 @@ export enum WatchlistStatus {
   WATCHED = 'watched',
   DROPPED = 'dropped',
 }
-
-export class WatchlistItem {
-  id: string;
-  userId: string;
-  tmdbId: number;
-  mediaType: MediaType;
-  status: WatchlistStatus;
-  addedAt: Date;
-  updatedAt: Date;
-}
