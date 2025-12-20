@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -10,15 +10,15 @@ import {
   Tabs,
   Tab,
   Button,
-} from '@mui/material';
-import { Add } from '@mui/icons-material';
-import { useRouter } from 'next/navigation';
-import { Header } from '@/components/layout/Header';
-import { WatchlistItemComponent } from '@/components/watchlist/WatchlistItem';
-import { watchlistService, WatchlistStats } from '@/services/watchlist.service';
-import { moviesService } from '@/services/movies.service';
-import { WatchlistItem, Media, WatchlistStatus } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
+} from "@mui/material";
+import { Add } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import { Header } from "@/components/layout/Header";
+import { WatchlistItemComponent } from "@/components/watchlist/WatchlistItem";
+import { watchlistService, WatchlistStats } from "@/services/watchlist.service";
+import { moviesService } from "@/services/movies.service";
+import { WatchlistItem, Media, WatchlistStatus } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function WatchlistPage() {
   const { user, loading: authLoading } = useAuth();
@@ -29,12 +29,12 @@ export default function WatchlistPage() {
   );
   const [stats, setStats] = useState<WatchlistStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [currentTab, setCurrentTab] = useState<string>('all');
+  const [error, setError] = useState("");
+  const [currentTab, setCurrentTab] = useState<string>("all");
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, authLoading, router]);
 
@@ -47,10 +47,10 @@ export default function WatchlistPage() {
 
   const loadWatchlist = async () => {
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const status =
-        currentTab === 'all' ? undefined : (currentTab as WatchlistStatus);
+        currentTab === "all" ? undefined : (currentTab as WatchlistStatus);
       const data = await watchlistService.getWatchlist(status);
       setItems(data);
 
@@ -60,7 +60,7 @@ export default function WatchlistPage() {
           try {
             const media = await moviesService.getDetails(
               item.tmdbId,
-              item.mediaType as 'movie' | 'tv',
+              item.mediaType as "movie" | "tv",
             );
             details.set(item.id, media);
           } catch (err) {
@@ -70,7 +70,7 @@ export default function WatchlistPage() {
       );
       setMediaDetails(details);
     } catch (err) {
-      setError('Error loading watchlist');
+      setError("Error loading watchlist");
       console.error(err);
     } finally {
       setLoading(false);
@@ -82,7 +82,7 @@ export default function WatchlistPage() {
       const data = await watchlistService.getStats();
       setStats(data);
     } catch (err) {
-      console.error('Error loading stats:', err);
+      console.error("Error loading stats:", err);
     }
   };
 
@@ -96,12 +96,12 @@ export default function WatchlistPage() {
       loadStats();
     } catch (err) {
       console.error(err);
-      alert('Error updating status');
+      alert("Error updating status");
     }
   };
 
   const handleRemove = async (itemId: string) => {
-    if (!confirm('Remove this item from watchlist?')) return;
+    if (!confirm("Remove this item from watchlist?")) return;
 
     try {
       await watchlistService.removeFromWatchlist(itemId);
@@ -109,7 +109,7 @@ export default function WatchlistPage() {
       loadStats();
     } catch (err) {
       console.error(err);
-      alert('Error removing item');
+      alert("Error removing item");
     }
   };
 
@@ -117,10 +117,10 @@ export default function WatchlistPage() {
     return (
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
         }}
       >
         <CircularProgress />
@@ -134,9 +134,9 @@ export default function WatchlistPage() {
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
             mb: 3,
           }}
         >
@@ -153,7 +153,7 @@ export default function WatchlistPage() {
           <Button
             variant="contained"
             startIcon={<Add />}
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
           >
             Add Movie
           </Button>
@@ -181,18 +181,18 @@ export default function WatchlistPage() {
         )}
 
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
             <CircularProgress />
           </Box>
         ) : items.length === 0 ? (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Box sx={{ textAlign: "center", py: 8 }}>
             <Typography variant="h6" color="text.secondary" gutterBottom>
               Your watchlist is empty
             </Typography>
             <Button
               variant="contained"
               startIcon={<Add />}
-              onClick={() => router.push('/')}
+              onClick={() => router.push("/")}
               sx={{ mt: 2 }}
             >
               Add your first movie

@@ -1,6 +1,6 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import axios, { AxiosInstance } from 'axios';
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import axios, { AxiosInstance } from "axios";
 
 @Injectable()
 export class TmdbClient {
@@ -8,11 +8,11 @@ export class TmdbClient {
   private apiKey: string;
 
   constructor(private configService: ConfigService) {
-    const baseURL = this.configService.get<string>('TMDB_BASE_URL');
-    this.apiKey = this.configService.get<string>('TMDB_API_KEY')!;
+    const baseURL = this.configService.get<string>("TMDB_BASE_URL");
+    this.apiKey = this.configService.get<string>("TMDB_API_KEY")!;
 
     if (!this.apiKey) {
-      throw new Error('TMDB_API_KEY is not configured');
+      throw new Error("TMDB_API_KEY is not configured");
     }
 
     this.client = axios.create({
@@ -34,7 +34,7 @@ export class TmdbClient {
         }
         const tmdbError = error as { status_message?: string };
         throw new Error(
-          `TMDB API error: ${tmdbError.status_message ?? 'Unknown error'}`,
+          `TMDB API error: ${tmdbError.status_message ?? "Unknown error"}`,
         );
       }
       throw error;

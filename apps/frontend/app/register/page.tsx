@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -10,32 +10,32 @@ import {
   Alert,
   Paper,
   Link as MuiLink,
-} from '@mui/material';
-import { MovieFilter } from '@mui/icons-material';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+} from "@mui/material";
+import { MovieFilter } from "@mui/icons-material";
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function RegisterPage() {
   const { register } = useAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     // Validation
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError("Password must be at least 6 characters");
       return;
     }
 
@@ -44,7 +44,7 @@ export default function RegisterPage() {
     try {
       await register(email, password, name);
     } catch (err: unknown) {
-      setError('Registration error. Please try again.');
+      setError("Registration error. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -55,22 +55,22 @@ export default function RegisterPage() {
     <Container maxWidth="sm">
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Paper
           elevation={3}
           sx={{
             p: 4,
-            width: '100%',
+            width: "100%",
             borderRadius: 2,
           }}
         >
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <MovieFilter sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
+          <Box sx={{ textAlign: "center", mb: 3 }}>
+            <MovieFilter sx={{ fontSize: 60, color: "primary.main", mb: 2 }} />
             <Typography variant="h4" component="h1" gutterBottom>
               Register
             </Typography>
@@ -134,13 +134,13 @@ export default function RegisterPage() {
               disabled={loading}
               sx={{ mt: 3, mb: 2 }}
             >
-              {loading ? 'Loading...' : 'Register'}
+              {loading ? "Loading..." : "Register"}
             </Button>
           </form>
 
-          <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Box sx={{ textAlign: "center", mt: 2 }}>
             <Typography variant="body2" color="text.secondary">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <MuiLink component={Link} href="/login" color="primary">
                 Sign In
               </MuiLink>

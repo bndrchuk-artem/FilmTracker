@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { WatchlistModule } from './watchlist/watchlist.module';
-import { MoviesModule } from './movies/movies.module';
-import { CommonModule } from './common/common.module';
-import { PrismaModule } from './prisma/prisma.module';
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { AuthModule } from "./auth/auth.module";
+import { UsersModule } from "./users/users.module";
+import { WatchlistModule } from "./watchlist/watchlist.module";
+import { MoviesModule } from "./movies/movies.module";
+import { CommonModule } from "./common/common.module";
+import { PrismaModule } from "./prisma/prisma.module";
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { PrismaModule } from './prisma/prisma.module';
     CommonModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: ".env",
     }),
   ],
   controllers: [AppController],

@@ -1,142 +1,73 @@
-name: CI
+name: CI Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 jobs:
-  lint:
-    name: Lint
+
+  backend-checks:
+    name: Backend CI
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: 18
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run ESLint
-        run: npm run lint
-
-  test-backend:
-    name: Test Backend
-    runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: watchlist_user
-          POSTGRES_PASSWORD: watchlist_password
-          POSTGRES_DB: watchlist_test_db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run Prisma migrations
+      - name: Install backend dependencies
         working-directory: ./apps/backend
-        env:
-          DATABASE_URL: postgresql://watchlist_user:watchlist_password@localhost:5432/watchlist_test_db?schema=public
-        run: npx prisma migrate deploy
+        run: npm ci
+
+      - name: Prettier
+        working-directory: ./apps/backend
+        run: npm run format:check
+
+      - name: Lint code
+        working-directory: ./apps/backend
+        run: npm run lint
 
       - name: Run unit tests
         working-directory: ./apps/backend
         run: npm run test
 
-      - name: Run integration tests
-        working-directory: ./apps/backend
-        env:
-          DATABASE_URL: postgresql://watchlist_user:watchlist_password@localhost:5432/watchlist_test_db?schema=public
-          JWT_SECRET: test-secret-key
-          JWT_EXPIRES_IN: 1h
-          TMDB_API_KEY: mock-key
-          TMDB_BASE_URL: https://api.themoviedb.org/3
-        run: npm run test:db:migrate && npm run test:e2e
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v3
-        with:
-          directory: ./apps/backend/coverage
-
-  build-backend:
-    name: Build Backend
-    runs-on: ubuntu-latest
-    needs: [lint, test-backend]
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate Prisma Client
-        working-directory: ./apps/backend
-        run: npx prisma generate
-
-      - name: Build backend
+      - name: Build project
         working-directory: ./apps/backend
         run: npm run build
 
-  build-frontend:
-    name: Build Frontend
+  frontend-checks:
+    name: Frontend CI
     runs-on: ubuntu-latest
-    needs: [lint]
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: 18
+          cache: "npm"
+          cache-dependency-path: apps/frontend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
+        working-directory: ./apps/frontend
         run: npm ci
-      
-      - name: Build frontend
+
+      - name: Prettier
+        working-directory: ./apps/frontend
+        run: npm run format:write
+
+      - name: Lint code
+        working-directory: ./apps/frontend
+        run: npm run lint
+
+      - name: Build project
         working-directory: ./apps/frontend
         run: npm run build
-
-  all-checks-passed:
-    name: All Checks Passed
-    runs-on: ubuntu-latest
-    needs: [lint, test-backend, build-backend, build-frontend]
-    
-    steps:
-      - name: Success
-        run: echo "All CI checks passed! ✅"

@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { TmdbClient } from './tmdb.client';
-import { SearchMoviesDto } from './dto/search-movies.dto';
+import { Injectable } from "@nestjs/common";
+import { TmdbClient } from "./tmdb.client";
+import { SearchMoviesDto } from "./dto/search-movies.dto";
 import {
   TmdbSearchResponse,
   TmdbMedia,
   TmdbMovie,
   TmdbTVShow,
-} from './types/tmdb.types';
+} from "./types/tmdb.types";
 
 @Injectable()
 export class MoviesService {
@@ -15,10 +15,10 @@ export class MoviesService {
   // Arrow function для правильного біндінгу this
   private hasMediaType = (item: unknown): item is TmdbMedia => {
     return (
-      typeof item === 'object' &&
+      typeof item === "object" &&
       item !== null &&
-      'media_type' in item &&
-      (item.media_type === 'movie' || item.media_type === 'tv')
+      "media_type" in item &&
+      (item.media_type === "movie" || item.media_type === "tv")
     );
   };
 
@@ -26,7 +26,7 @@ export class MoviesService {
     const { query, page = 1 } = searchDto;
 
     const response = await this.tmdbClient.get<TmdbSearchResponse>(
-      '/search/multi',
+      "/search/multi",
       {
         query,
         page,
@@ -42,28 +42,28 @@ export class MoviesService {
 
   async getDetails(
     id: number,
-    mediaType: 'movie' | 'tv',
+    mediaType: "movie" | "tv",
   ): Promise<TmdbMovie | TmdbTVShow> {
-    const endpoint = mediaType === 'movie' ? `/movie/${id}` : `/tv/${id}`;
+    const endpoint = mediaType === "movie" ? `/movie/${id}` : `/tv/${id}`;
 
-    if (mediaType === 'movie') {
+    if (mediaType === "movie") {
       const details = await this.tmdbClient.get<TmdbMovie>(endpoint);
       return {
         ...details,
-        media_type: 'movie',
+        media_type: "movie",
       };
     } else {
       const details = await this.tmdbClient.get<TmdbTVShow>(endpoint);
       return {
         ...details,
-        media_type: 'tv',
+        media_type: "tv",
       };
     }
   }
 
   async getTrending(): Promise<TmdbMedia[]> {
     const response =
-      await this.tmdbClient.get<TmdbSearchResponse>('/trending/all/week');
+      await this.tmdbClient.get<TmdbSearchResponse>("/trending/all/week");
 
     // Фільтруємо тільки фільми та серіали
     const filtered = response.results.filter(this.hasMediaType);
@@ -74,10 +74,10 @@ export class MoviesService {
 
   async getSimilar(
     id: number,
-    mediaType: 'movie' | 'tv',
+    mediaType: "movie" | "tv",
   ): Promise<TmdbMedia[]> {
     const endpoint =
-      mediaType === 'movie' ? `/movie/${id}/similar` : `/tv/${id}/similar`;
+      mediaType === "movie" ? `/movie/${id}/similar` : `/tv/${id}/similar`;
 
     const response = await this.tmdbClient.get<TmdbSearchResponse>(endpoint);
 

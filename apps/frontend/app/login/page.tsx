@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -10,27 +10,27 @@ import {
   Alert,
   Paper,
   Link as MuiLink,
-} from '@mui/material';
-import { MovieFilter } from '@mui/icons-material';
-import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+} from "@mui/material";
+import { MovieFilter } from "@mui/icons-material";
+import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       await login(email, password);
     } catch (err: unknown) {
-      setError('Login error. Please check your credentials.');
+      setError("Login error. Please check your credentials.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -41,22 +41,22 @@ export default function LoginPage() {
     <Container maxWidth="sm">
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Paper
           elevation={3}
           sx={{
             p: 4,
-            width: '100%',
+            width: "100%",
             borderRadius: 2,
           }}
         >
-          <Box sx={{ textAlign: 'center', mb: 3 }}>
-            <MovieFilter sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
+          <Box sx={{ textAlign: "center", mb: 3 }}>
+            <MovieFilter sx={{ fontSize: 60, color: "primary.main", mb: 2 }} />
             <Typography variant="h4" component="h1" gutterBottom>
               Login
             </Typography>
@@ -100,13 +100,13 @@ export default function LoginPage() {
               disabled={loading}
               sx={{ mt: 3, mb: 2 }}
             >
-              {loading ? 'Loading...' : 'Sign In'}
+              {loading ? "Loading..." : "Sign In"}
             </Button>
           </form>
 
-          <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Box sx={{ textAlign: "center", mt: 2 }}>
             <Typography variant="body2" color="text.secondary">
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <MuiLink component={Link} href="/register" color="primary">
                 Register
               </MuiLink>

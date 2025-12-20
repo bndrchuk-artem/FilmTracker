@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -8,33 +8,33 @@ import {
   CircularProgress,
   Alert,
   Grid,
-} from '@mui/material';
-import { Header } from '@/components/layout/Header';
-import { SearchBar } from '@/components/movies/SearchBar';
-import { MovieCard } from '@/components/movies/MovieCard';
-import { StatusDialog } from '@/components/watchlist/StatusDialog';
-import { SuccessDialog } from '@/components/watchlist/SuccessDialog';
-import { moviesService } from '@/services/movies.service';
-import { watchlistService } from '@/services/watchlist.service';
-import { Media, WatchlistStatus, MediaType, WatchlistItem } from '@/types';
-import { useAuth } from '@/contexts/AuthContext';
-import { useDebounce } from '@/hooks/useDebounce';
+} from "@mui/material";
+import { Header } from "@/components/layout/Header";
+import { SearchBar } from "@/components/movies/SearchBar";
+import { MovieCard } from "@/components/movies/MovieCard";
+import { StatusDialog } from "@/components/watchlist/StatusDialog";
+import { SuccessDialog } from "@/components/watchlist/SuccessDialog";
+import { moviesService } from "@/services/movies.service";
+import { watchlistService } from "@/services/watchlist.service";
+import { Media, WatchlistStatus, MediaType, WatchlistItem } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const statusLabels: Record<WatchlistStatus, string> = {
-  [WatchlistStatus.PLAN_TO_WATCH]: 'Plan to Watch',
-  [WatchlistStatus.WATCHING]: 'Watching',
-  [WatchlistStatus.WATCHED]: 'Watched',
-  [WatchlistStatus.DROPPED]: 'Dropped',
+  [WatchlistStatus.PLAN_TO_WATCH]: "Plan to Watch",
+  [WatchlistStatus.WATCHING]: "Watching",
+  [WatchlistStatus.WATCHED]: "Watched",
+  [WatchlistStatus.DROPPED]: "Dropped",
 };
 
 export default function Home() {
   const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Media[]>([]);
   const [trending, setTrending] = useState<Media[]>([]);
   const [watchlistItems, setWatchlistItems] = useState<WatchlistItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [addingId, setAddingId] = useState<number | null>(null);
 
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
@@ -42,7 +42,7 @@ export default function Home() {
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
-  const [selectedStatusLabel, setSelectedStatusLabel] = useState('');
+  const [selectedStatusLabel, setSelectedStatusLabel] = useState("");
 
   useEffect(() => {
     loadTrending();
@@ -56,7 +56,7 @@ export default function Home() {
       handleSearch(debouncedSearchQuery);
     } else {
       setSearchResults([]);
-      setError('');
+      setError("");
     }
   }, [debouncedSearchQuery]);
 
@@ -65,7 +65,7 @@ export default function Home() {
       const data = await moviesService.getTrending();
       setTrending(data);
     } catch (err) {
-      console.error('Error loading trending:', err);
+      console.error("Error loading trending:", err);
     }
   };
 
@@ -74,7 +74,7 @@ export default function Home() {
       const data = await watchlistService.getWatchlist();
       setWatchlistItems(data);
     } catch (err) {
-      console.error('Error loading watchlist:', err);
+      console.error("Error loading watchlist:", err);
     }
   };
 
@@ -82,15 +82,15 @@ export default function Home() {
     if (!query.trim()) return;
 
     setLoading(true);
-    setError('');
+    setError("");
     try {
       const data = await moviesService.search(query);
       setSearchResults(data.results);
       if (data.results.length === 0) {
-        setError('No results found. Try a different search.');
+        setError("No results found. Try a different search.");
       }
     } catch (err) {
-      setError('Search error. Please try again.');
+      setError("Search error. Please try again.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -99,7 +99,7 @@ export default function Home() {
 
   const handleOpenStatusDialog = (media: Media) => {
     if (!user) {
-      window.location.href = '/login';
+      window.location.href = "/login";
       return;
     }
     setSelectedMedia(media);
@@ -123,7 +123,7 @@ export default function Home() {
       loadWatchlist();
     } catch (err) {
       console.error(err);
-      alert('Error adding. Item might already be in watchlist.');
+      alert("Error adding. Item might already be in watchlist.");
     } finally {
       setAddingId(null);
     }
@@ -147,16 +147,16 @@ export default function Home() {
     <>
       <Header />
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
+        <Box sx={{ textAlign: "center", mb: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom>
             {isSearching && searchResults.length > 0
-              ? 'Search Results'
-              : 'Trending Now'}
+              ? "Search Results"
+              : "Trending Now"}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
             {isSearching && loading
-              ? 'Searching...'
-              : 'Discover your next favorite movie or TV show'}
+              ? "Searching..."
+              : "Discover your next favorite movie or TV show"}
           </Typography>
           <SearchBar
             value={searchQuery}
@@ -172,7 +172,7 @@ export default function Home() {
         )}
 
         {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
             <CircularProgress />
           </Box>
         ) : (
@@ -186,7 +186,7 @@ export default function Home() {
                 <Grid
                   key={media.id}
                   sx={{
-                    width: { xs: '100%', sm: '50%', md: '33.33%', lg: '25%' },
+                    width: { xs: "100%", sm: "50%", md: "33.33%", lg: "25%" },
                     padding: 1.5,
                   }}
                 >
@@ -213,11 +213,11 @@ export default function Home() {
         )}
 
         {!loading && displayMedia.length === 0 && !error && (
-          <Box sx={{ textAlign: 'center', py: 8 }}>
+          <Box sx={{ textAlign: "center", py: 8 }}>
             <Typography variant="h6" color="text.secondary">
               {isSearching
-                ? 'No results found'
-                : 'Start searching to discover movies and TV shows'}
+                ? "No results found"
+                : "Start searching to discover movies and TV shows"}
             </Typography>
           </Box>
         )}

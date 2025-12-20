@@ -1,17 +1,17 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from '@/theme';
-import { AuthProvider } from '@/contexts/AuthContext';
-import './globals.css';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "@/theme";
+import { AuthProvider } from "@/contexts/AuthContext";
+import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Watchlist App',
-  description: 'Управління особистим watchlist фільмів і серіалів',
+  title: "Watchlist App",
+  description: "Управління особистим watchlist фільмів і серіалів",
 };
 
 export default function RootLayout({

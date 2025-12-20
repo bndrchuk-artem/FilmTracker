@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
 import {
   Box,
   Container,
   Typography,
   Paper,
   CircularProgress,
-} from '@mui/material';
-import { useRouter } from 'next/navigation';
-import { Header } from '@/components/layout/Header';
-import { useAuth } from '@/contexts/AuthContext';
+} from "@mui/material";
+import { useRouter } from "next/navigation";
+import { Header } from "@/components/layout/Header";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -18,7 +18,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, loading, router]);
 
@@ -26,10 +26,10 @@ export default function ProfilePage() {
     return (
       <Box
         sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
         }}
       >
         <CircularProgress />
@@ -62,10 +62,10 @@ export default function ProfilePage() {
               Member Since
             </Typography>
             <Typography variant="body1">
-              {new Date(user.createdAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
+              {new Date(user.createdAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
               })}
             </Typography>
           </Box>

@@ -3,12 +3,12 @@ import {
   NotFoundException,
   ConflictException,
   ForbiddenException,
-} from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { WatchlistStatus } from '../common/entities/watchlist-item.entity';
-import { AddToWatchlistDto } from './dto/add-to-watchlist.dto';
-import { UpdateWatchlistDto } from './dto/update-watchlist.dto';
-import { QueryWatchlistDto } from './dto/query-watchlist.dto';
+} from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { WatchlistStatus } from "../common/entities/watchlist-item.entity";
+import { AddToWatchlistDto } from "./dto/add-to-watchlist.dto";
+import { UpdateWatchlistDto } from "./dto/update-watchlist.dto";
+import { QueryWatchlistDto } from "./dto/query-watchlist.dto";
 
 @Injectable()
 export class WatchlistService {
@@ -27,7 +27,7 @@ export class WatchlistService {
     });
 
     if (existing) {
-      throw new ConflictException('Item already exists in watchlist');
+      throw new ConflictException("Item already exists in watchlist");
     }
 
     // Створення нового елемента
@@ -50,7 +50,7 @@ export class WatchlistService {
         ...(queryDto?.status && { status: queryDto.status }),
       },
       orderBy: {
-        addedAt: 'desc',
+        addedAt: "desc",
       },
     });
 
@@ -63,11 +63,11 @@ export class WatchlistService {
     });
 
     if (!item) {
-      throw new NotFoundException('Watchlist item not found');
+      throw new NotFoundException("Watchlist item not found");
     }
 
     if (item.userId !== userId) {
-      throw new ForbiddenException('Access denied to this watchlist item');
+      throw new ForbiddenException("Access denied to this watchlist item");
     }
 
     return item;
@@ -105,11 +105,11 @@ export class WatchlistService {
 
     const stats = {
       total: items.length,
-      plan_to_watch: items.filter((item) => item.status === 'PLAN_TO_WATCH')
+      plan_to_watch: items.filter((item) => item.status === "PLAN_TO_WATCH")
         .length,
-      watching: items.filter((item) => item.status === 'WATCHING').length,
-      watched: items.filter((item) => item.status === 'WATCHED').length,
-      dropped: items.filter((item) => item.status === 'DROPPED').length,
+      watching: items.filter((item) => item.status === "WATCHING").length,
+      watched: items.filter((item) => item.status === "WATCHED").length,
+      dropped: items.filter((item) => item.status === "DROPPED").length,
     };
 
     return stats;

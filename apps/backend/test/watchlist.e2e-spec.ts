@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { PrismaService } from '../src/prisma/prisma.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { INestApplication, ValidationPipe } from "@nestjs/common";
+import request from "supertest";
+import { AppModule } from "../src/app.module";
+import { PrismaService } from "../src/prisma/prisma.service";
 
-describe('Watchlist API (e2e)', () => {
+describe("Watchlist API (e2e)", () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let authToken: string;
@@ -36,68 +36,68 @@ describe('Watchlist API (e2e)', () => {
     await app.close();
   });
 
-  describe('Authentication', () => {
-    it('should register a new user', async () => {
+  describe("Authentication", () => {
+    it("should register a new user", async () => {
       const response = await request(app.getHttpServer())
-        .post('/auth/register')
+        .post("/auth/register")
         .send({
-          email: 'test@example.com',
-          password: 'password123',
-          name: 'Test User',
+          email: "test@example.com",
+          password: "password123",
+          name: "Test User",
         })
         .expect(201);
 
-      expect(response.body).toHaveProperty('accessToken');
-      expect(response.body.user).toHaveProperty('id');
-      expect(response.body.user.email).toBe('test@example.com');
+      expect(response.body).toHaveProperty("accessToken");
+      expect(response.body.user).toHaveProperty("id");
+      expect(response.body.user.email).toBe("test@example.com");
 
       authToken = response.body.accessToken;
       userId = response.body.user.id;
     });
 
-    it('should login with valid credentials', async () => {
+    it("should login with valid credentials", async () => {
       const response = await request(app.getHttpServer())
-        .post('/auth/login')
+        .post("/auth/login")
         .send({
-          email: 'test@example.com',
-          password: 'password123',
+          email: "test@example.com",
+          password: "password123",
         })
         .expect(201);
 
-      expect(response.body).toHaveProperty('accessToken');
+      expect(response.body).toHaveProperty("accessToken");
     });
   });
 
-  describe('Watchlist CRUD', () => {
+  describe("Watchlist CRUD", () => {
     let watchlistItemId: string;
 
-    it('should add item to watchlist', async () => {
+    it("should add item to watchlist", async () => {
       const response = await request(app.getHttpServer())
-        .post('/watchlist')
-        .set('Authorization', `Bearer ${authToken}`)
+        .post("/watchlist")
+        .set("Authorization", `Bearer ${authToken}`)
         .send({
           tmdbId: 27205,
-          mediaType: 'movie',
-          status: 'plan_to_watch',
+          mediaType: "movie",
+          status: "plan_to_watch",
         })
         .expect(201);
 
-      console.log('Created item:', response.body);
+      console.log("Created item:", response.body);
 
-      expect(response.body).toHaveProperty('id');
+      expect(response.body).toHaveProperty("id");
       expect(response.body.tmdbId).toBe(27205);
-      expect(response.body.status).toBe('plan_to_watch');
+      expect(response.body.status).toBe("plan_to_watch");
 
       watchlistItemId = response.body.id;
     });
 
-    it('should get watchlist stats', async () => {
+    it("should get watchlist stats", async () => {
       const response = await request(app.getHttpServer())
-        .get('/watchlist/stats')
-        .set('Authorization', `Bearer ${authToken}`)
+        .get("/watchlist/stats")
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(200);
 
-      console.log('Stats:', response.body);
+      console.log("Stats:", response.body);
 
       expect(response.body).toEqual({
         total: 1,
@@ -108,22 +108,22 @@ describe('Watchlist API (e2e)', () => {
       });
     });
 
-    it('should delete watchlist item', async () => {
+    it("should delete watchlist item", async () => {
       await request(app.getHttpServer())
         .delete(`/watchlist/${watchlistItemId}`)
-        .set('Authorization', `Bearer ${authToken}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(200);
 
       const response = await request(app.getHttpServer())
-        .get('/watchlist')
-        .set('Authorization', `Bearer ${authToken}`)
+        .get("/watchlist")
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(200);
 
       expect(response.body.length).toBe(0);
     });
 
-    it('should return 401 without auth token', async () => {
-      await request(app.getHttpServer()).get('/watchlist').expect(401);
+    it("should return 401 without auth token", async () => {
+      await request(app.getHttpServer()).get("/watchlist").expect(401);
     });
   });
 });
