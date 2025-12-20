@@ -4,59 +4,63 @@ import {
   ConflictException,
   ForbiddenException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { InMemoryStorage } from '../common/storage/in-memory.storage';
-import {
-  WatchlistItem,
-  WatchlistStatus,
-} from '../common/entities/watchlist-item.entity';
+import { PrismaService } from '../prisma/prisma.service';
+import { WatchlistStatus } from '../common/entities/watchlist-item.entity';
 import { AddToWatchlistDto } from './dto/add-to-watchlist.dto';
 import { UpdateWatchlistDto } from './dto/update-watchlist.dto';
 import { QueryWatchlistDto } from './dto/query-watchlist.dto';
 
 @Injectable()
 export class WatchlistService {
-  private watchlistStorage = new InMemoryStorage<WatchlistItem>();
+  constructor(private readonly prisma: PrismaService) {}
 
-  addToWatchlist(userId: string, addDto: AddToWatchlistDto): WatchlistItem {
-    const existing = this.watchlistStorage.find(
-      (item) =>
-        item.userId === userId &&
-        item.tmdbId === addDto.tmdbId &&
-        item.mediaType === addDto.mediaType,
-    );
+  async addToWatchlist(userId: string, addDto: AddToWatchlistDto) {
+    // Перевірка чи елемент вже існує
+    const existing = await this.prisma.watchlistItem.findUnique({
+      where: {
+        userId_tmdbId_mediaType: {
+          userId,
+          tmdbId: addDto.tmdbId,
+          mediaType: addDto.mediaType,
+        },
+      },
+    });
 
     if (existing) {
       throw new ConflictException('Item already exists in watchlist');
     }
 
-    const watchlistItem: WatchlistItem = {
-      id: uuidv4(),
-      userId,
-      tmdbId: addDto.tmdbId,
-      mediaType: addDto.mediaType,
-      status: addDto.status,
-      addedAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    this.watchlistStorage.set(watchlistItem.id, watchlistItem);
+    // Створення нового елемента
+    const watchlistItem = await this.prisma.watchlistItem.create({
+      data: {
+        userId,
+        tmdbId: addDto.tmdbId,
+        mediaType: addDto.mediaType,
+        status: addDto.status,
+      },
+    });
 
     return watchlistItem;
   }
 
-  getWatchlist(userId: string, queryDto?: QueryWatchlistDto): WatchlistItem[] {
-    let items = this.watchlistStorage.filter((item) => item.userId === userId);
+  async getWatchlist(userId: string, queryDto?: QueryWatchlistDto) {
+    const items = await this.prisma.watchlistItem.findMany({
+      where: {
+        userId,
+        ...(queryDto?.status && { status: queryDto.status }),
+      },
+      orderBy: {
+        addedAt: 'desc',
+      },
+    });
 
-    if (queryDto?.status) {
-      items = items.filter((item) => item.status === queryDto.status);
-    }
-
-    return items.sort((a, b) => b.addedAt.getTime() - a.addedAt.getTime());
+    return items;
   }
 
-  getWatchlistItem(userId: string, itemId: string): WatchlistItem {
-    const item = this.watchlistStorage.get(itemId);
+  async getWatchlistItem(userId: string, itemId: string) {
+    const item = await this.prisma.watchlistItem.findUnique({
+      where: { id: itemId },
+    });
 
     if (!item) {
       throw new NotFoundException('Watchlist item not found');
@@ -69,42 +73,43 @@ export class WatchlistService {
     return item;
   }
 
-  updateStatus(
+  async updateStatus(
     userId: string,
     itemId: string,
     updateDto: UpdateWatchlistDto,
-  ): WatchlistItem {
-    const item = this.getWatchlistItem(userId, itemId);
+  ) {
+    const item = await this.getWatchlistItem(userId, itemId);
 
-    item.status = updateDto.status;
-    item.updatedAt = new Date();
+    const updatedItem = await this.prisma.watchlistItem.update({
+      where: { id: itemId },
+      data: {
+        status: updateDto.status,
+      },
+    });
 
-    this.watchlistStorage.set(itemId, item);
-
-    return item;
+    return updatedItem;
   }
 
-  removeFromWatchlist(userId: string, itemId: string): void {
-    this.getWatchlistItem(userId, itemId);
-    this.watchlistStorage.delete(itemId);
+  async removeFromWatchlist(userId: string, itemId: string): Promise<void> {
+    await this.getWatchlistItem(userId, itemId);
+
+    await this.prisma.watchlistItem.delete({
+      where: { id: itemId },
+    });
   }
 
-  getWatchlistStats(userId: string) {
-    const items = this.watchlistStorage.filter(
-      (item) => item.userId === userId,
-    );
+  async getWatchlistStats(userId: string) {
+    const items = await this.prisma.watchlistItem.findMany({
+      where: { userId },
+    });
 
     const stats = {
       total: items.length,
-      plan_to_watch: items.filter(
-        (item) => item.status === WatchlistStatus.PLAN_TO_WATCH,
-      ).length,
-      watching: items.filter((item) => item.status === WatchlistStatus.WATCHING)
+      plan_to_watch: items.filter((item) => item.status === 'PLAN_TO_WATCH')
         .length,
-      watched: items.filter((item) => item.status === WatchlistStatus.WATCHED)
-        .length,
-      dropped: items.filter((item) => item.status === WatchlistStatus.DROPPED)
-        .length,
+      watching: items.filter((item) => item.status === 'WATCHING').length,
+      watched: items.filter((item) => item.status === 'WATCHED').length,
+      dropped: items.filter((item) => item.status === 'DROPPED').length,
     };
 
     return stats;

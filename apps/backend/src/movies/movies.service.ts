@@ -1,71 +1,89 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { TmdbClient } from './tmdb.client';
 import { SearchMoviesDto } from './dto/search-movies.dto';
-import { MOCK_MOVIES, MOCK_TV_SHOWS } from './data/mock-movies.data';
-import { Media, SearchResponse } from '../common/entities/movie.entity';
+import {
+  TmdbSearchResponse,
+  TmdbMedia,
+  TmdbMovie,
+  TmdbTVShow,
+} from './types/tmdb.types';
 
 @Injectable()
 export class MoviesService {
-  private allMedia: Media[] = [...MOCK_MOVIES, ...MOCK_TV_SHOWS];
+  constructor(private readonly tmdbClient: TmdbClient) {}
 
-  search(searchDto: SearchMoviesDto): SearchResponse {
+  // Arrow function для правильного біндінгу this
+  private hasMediaType = (item: unknown): item is TmdbMedia => {
+    return (
+      typeof item === 'object' &&
+      item !== null &&
+      'media_type' in item &&
+      (item.media_type === 'movie' || item.media_type === 'tv')
+    );
+  };
+
+  async search(searchDto: SearchMoviesDto): Promise<TmdbSearchResponse> {
     const { query, page = 1 } = searchDto;
 
-    // Фільтрація за пошуковим запитом
-    const filtered = this.allMedia.filter((media) => {
-      const title = 'title' in media ? media.title : media.name;
-      return title.toLowerCase().includes(query.toLowerCase());
-    });
-
-    // Пагінація (10 результатів на сторінку)
-    const pageSize = 10;
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    const paginatedResults = filtered.slice(startIndex, endIndex);
-
-    return {
-      page,
-      results: paginatedResults,
-      total_pages: Math.ceil(filtered.length / pageSize),
-      total_results: filtered.length,
-    };
-  }
-
-  getDetails(id: number, mediaType: 'movie' | 'tv'): Media {
-    const media = this.allMedia.find(
-      (m) => m.id === id && m.media_type === mediaType,
+    const response = await this.tmdbClient.get<TmdbSearchResponse>(
+      '/search/multi',
+      {
+        query,
+        page,
+        include_adult: false,
+      },
     );
 
-    if (!media) {
-      throw new NotFoundException(
-        `${mediaType === 'movie' ? 'Movie' : 'TV Show'} with id ${id} not found`,
-      );
+    // Фільтруємо тільки фільми та серіали
+    response.results = response.results.filter(this.hasMediaType);
+
+    return response;
+  }
+
+  async getDetails(
+    id: number,
+    mediaType: 'movie' | 'tv',
+  ): Promise<TmdbMovie | TmdbTVShow> {
+    const endpoint = mediaType === 'movie' ? `/movie/${id}` : `/tv/${id}`;
+
+    if (mediaType === 'movie') {
+      const details = await this.tmdbClient.get<TmdbMovie>(endpoint);
+      return {
+        ...details,
+        media_type: 'movie',
+      };
+    } else {
+      const details = await this.tmdbClient.get<TmdbTVShow>(endpoint);
+      return {
+        ...details,
+        media_type: 'tv',
+      };
     }
-
-    return media;
   }
 
-  getTrending(): Media[] {
-    // Повертаємо топ-5 за рейтингом
-    return [...this.allMedia]
-      .sort((a, b) => b.vote_average - a.vote_average)
-      .slice(0, 5);
+  async getTrending(): Promise<TmdbMedia[]> {
+    const response =
+      await this.tmdbClient.get<TmdbSearchResponse>('/trending/all/week');
+
+    // Фільтруємо тільки фільми та серіали
+    const filtered = response.results.filter(this.hasMediaType);
+
+    // Повертаємо топ-10
+    return filtered.slice(0, 10);
   }
 
-  getSimilar(id: number, mediaType: 'movie' | 'tv'): Media[] {
-    const currentMedia = this.getDetails(id, mediaType);
+  async getSimilar(
+    id: number,
+    mediaType: 'movie' | 'tv',
+  ): Promise<TmdbMedia[]> {
+    const endpoint =
+      mediaType === 'movie' ? `/movie/${id}/similar` : `/tv/${id}/similar`;
 
-    // Фільтруємо по genre_ids (мокова логіка)
-    const similar = this.allMedia.filter((media) => {
-      if (media.id === id) return false;
+    const response = await this.tmdbClient.get<TmdbSearchResponse>(endpoint);
 
-      // Перевіряємо чи є спільні жанри
-      const commonGenres = media.genre_ids.filter((genreId) =>
-        currentMedia.genre_ids.includes(genreId),
-      );
-
-      return commonGenres.length > 0;
-    });
-
-    return similar.slice(0, 5);
+    return response.results.map((item) => ({
+      ...item,
+      media_type: mediaType,
+    })) as TmdbMedia[];
   }
 }
