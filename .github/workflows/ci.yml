@@ -62,7 +62,7 @@ jobs:
       - name: Run Prisma migrations
         working-directory: ./apps/backend
         env:
-          DATABASE_URL: postgresql://watchlist_user:watchlist_password@localhost:5432/watchlist_test_db?schema=public
+          DATABASE_URL: postgresql://watchlist_user:watchlist_password@localhost:5433/watchlist_test_db?schema=public
         run: npx prisma migrate deploy
 
       - name: Run unit tests
@@ -72,12 +72,12 @@ jobs:
       - name: Run integration tests
         working-directory: ./apps/backend
         env:
-          DATABASE_URL: postgresql://watchlist_user:watchlist_password@localhost:5432/watchlist_test_db?schema=public
+          DATABASE_URL: postgresql://watchlist_user:watchlist_password@localhost:5434/watchlist_test_db?schema=public
           JWT_SECRET: test-secret-key
           JWT_EXPIRES_IN: 1h
           TMDB_API_KEY: mock-key
           TMDB_BASE_URL: https://api.themoviedb.org/3
-        run: npx prisma generate && npm run test:e2e
+        run: npm run test:db:migrate && npm run test:e2e
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
