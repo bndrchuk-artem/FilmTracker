@@ -86,7 +86,6 @@ jobs:
 
   build-backend:
     name: Build Backend
-    working-directory: ./apps/backend
     runs-on: ubuntu-latest
     needs: [lint, test-backend]
     
@@ -113,7 +112,6 @@ jobs:
 
   build-frontend:
     name: Build Frontend
-    working-directory: ./apps/frontend
     runs-on: ubuntu-latest
     needs: [lint]
     
