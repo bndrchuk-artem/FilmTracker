@@ -7,7 +7,17 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**"]
+      "outputs": ["dist/**", ".next/**"],
+      "env": [
+        "NODE_ENV",
+        "PORT",
+        "FRONTEND_URL",
+        "JWT_SECRET",
+        "JWT_EXPIRES_IN",
+        "DATABASE_URL",
+        "TMDB_API_KEY",
+        "TMDB_BASE_URL"
+      ]
     },
     "lint": {
       "outputs": []
