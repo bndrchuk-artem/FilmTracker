@@ -14,6 +14,21 @@ services:
     networks:
       - watchlist-network
 
+  postgres-test:
+    image: postgres:16-alpine
+    container_name: watchlist-postgres-test
+    restart: unless-stopped
+    ports:
+      - '5434:5432'
+    environment:
+      POSTGRES_USER: watchlist_user
+      POSTGRES_PASSWORD: watchlist_password
+      POSTGRES_DB: watchlist_test_db
+    tmpfs:
+      - /var/lib/postgresql/data
+    networks:
+      - watchlist-network
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: watchlist-pgadmin
