@@ -44,6 +44,7 @@ export interface Movie {
   release_date: string;
   vote_average: number;
   genres: string[];
+  media_type: MediaType.MOVIE;
 }
 
 export interface TVShow {
@@ -55,6 +56,7 @@ export interface TVShow {
   first_air_date: string;
   vote_average: number;
   genres: string[];
+  media_type: MediaType.TV;
 }
 
 export type Media = Movie | TVShow;
